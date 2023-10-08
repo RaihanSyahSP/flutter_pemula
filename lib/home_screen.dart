@@ -5,8 +5,29 @@ import 'package:flutter_pemula/model/category_food.dart';
 import 'package:flutter_pemula/model/food_data.dart';
 import 'package:flutter_pemula/model/list_foods_bycategory.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
+
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  List<ListFoodsByCategory> filteredFoods = listFoodsByCategory;
+
+  String selectedCategory = '';
+
+  void updateFilteredFoods(List<ListFoodsByCategory> newFilteredFoods) {
+    setState(() {
+      filteredFoods = newFilteredFoods;
+    });
+  }
+
+  void updateSelectedCategory(String category) {
+    setState(() {
+      selectedCategory = category;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -109,7 +130,10 @@ class HomeScreen extends StatelessWidget {
                     children: <Widget>[
                       SizedBox(
                         height: 50,
-                        child: ListCategory(),
+                        child: ListCategory(
+                            updateFilteredFoods: updateFilteredFoods,
+                            selectedCategory: selectedCategory,
+                            updateSelectedCategory: updateSelectedCategory),
                       )
                       //List of food
                     ],
@@ -124,7 +148,7 @@ class HomeScreen extends StatelessWidget {
                   const SizedBox(height: 10),
                   SizedBox(
                     height: MediaQuery.of(context).size.height * 0.6,
-                    child: const FoodDataListView(),
+                    child: FoodDataListView(filteredFoods: filteredFoods),
                   )
 
                   // Expanded(child: FoodDataListView())
@@ -147,11 +171,26 @@ class GridFood extends StatelessWidget {
   }
 }
 
-class ListCategory extends StatelessWidget {
-  ListCategory({Key? key}) : super(key: key);
+List<ListFoodsByCategory> filterFoodsByCategory(
+    List<ListFoodsByCategory> foodsList, String category) {
+  return foodsList.where((food) => food.category == category).toList();
+}
 
-  final distinctCategory = foodDataList.map((e) => e.category).toSet().toList();
+// ignore: must_be_immutable
+class ListCategory extends StatelessWidget {
+  final Function(List<ListFoodsByCategory>) updateFilteredFoods;
+  final Function(String) updateSelectedCategory;
+  final String selectedCategory;
+
+  ListCategory(
+      {Key? key,
+      required this.updateFilteredFoods,
+      required this.selectedCategory,
+      required this.updateSelectedCategory})
+      : super(key: key);
+
   final categoryFood = foodCategory.map((e) => e.category).toSet().toList();
+  List<ListFoodsByCategory> filteredFoods = listFoodsByCategory;
 
   @override
   Widget build(BuildContext context) {
@@ -160,19 +199,33 @@ class ListCategory extends StatelessWidget {
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemBuilder: (context, index) {
-          // final CategoryData category = categoryList[index];
-
+          final category = categoryFood[index];
+          final isActive = category == selectedCategory;
           return Container(
             clipBehavior: Clip.antiAlias,
             margin: const EdgeInsets.only(right: 10),
             decoration: BoxDecoration(
               border: Border.all(
-                color: Colors.black38, // red as border color
-              ),
+                  color: isActive ? Colors.lightGreenAccent : Colors.black38,
+                  width: isActive ? 2.5 : 1),
               borderRadius: BorderRadius.circular(15),
             ),
             child: InkWell(
-              onTap: () {},
+              onTap: () {
+                // Filter the list based on the selected category
+                final selectedCategory = categoryFood[index];
+                final filteredFoods = filterFoodsByCategory(
+                    listFoodsByCategory, selectedCategory);
+
+                // Update filtered data in the parent widget
+                updateFilteredFoods(filteredFoods);
+
+                // Update selected category in the parent widget
+                updateSelectedCategory(selectedCategory);
+
+                // Rebuild the widget tree
+                Scaffold.of(context).setState(() {});
+              },
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
@@ -289,15 +342,16 @@ class PopularFoodList extends StatelessWidget {
 }
 
 class FoodDataListView extends StatelessWidget {
-  const FoodDataListView({Key? key}) : super(key: key);
+  final List<ListFoodsByCategory> filteredFoods;
+
+  FoodDataListView({Key? key, required this.filteredFoods}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      itemCount: listFoodsByCategory.length,
+      itemCount: filteredFoods.length,
       itemBuilder: (context, index) {
-        // final FoodData foodData = foodDataList[index];
-        final ListFoodsByCategory listFood = listFoodsByCategory[index];
+        final ListFoodsByCategory listFood = filteredFoods[index];
         return Card(
           clipBehavior: Clip.antiAlias,
           elevation: 2,
