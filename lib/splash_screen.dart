@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_pemula/constants.dart';
 import 'package:flutter_pemula/login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -42,7 +43,7 @@ class _SplashScreenState extends State<SplashScreen> {
               fit: BoxFit.contain,
             ),
             const Text(
-              'Indonesian Food',
+              'Recipy',
               style: TextStyle(
                 fontSize: 21,
                 fontWeight: FontWeight.w500,

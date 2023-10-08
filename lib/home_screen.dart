@@ -4,6 +4,7 @@ import 'package:flutter_pemula/detail_screen.dart';
 import 'package:flutter_pemula/model/category_food.dart';
 import 'package:flutter_pemula/model/food_data.dart';
 import 'package:flutter_pemula/model/list_foods_bycategory.dart';
+import 'package:flutter_pemula/constants.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -81,7 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text(
-                              'Popular Dish',
+                              'Popular Recipes',
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -99,7 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: <Widget>[
                       SizedBox(
                         height: 110,
-                        child: PopularFoodList(),
+                        child: PopularRecipes(),
                       )
                       //List of food
                     ],
@@ -181,6 +182,8 @@ class ListCategory extends StatelessWidget {
   final Function(List<ListFoodsByCategory>) updateFilteredFoods;
   final Function(String) updateSelectedCategory;
   final String selectedCategory;
+  final categoryFood = foodCategory.map((e) => e.category).toSet().toList();
+  List<ListFoodsByCategory> filteredFoods = listFoodsByCategory;
 
   ListCategory(
       {Key? key,
@@ -188,9 +191,6 @@ class ListCategory extends StatelessWidget {
       required this.selectedCategory,
       required this.updateSelectedCategory})
       : super(key: key);
-
-  final categoryFood = foodCategory.map((e) => e.category).toSet().toList();
-  List<ListFoodsByCategory> filteredFoods = listFoodsByCategory;
 
   @override
   Widget build(BuildContext context) {
@@ -206,11 +206,13 @@ class ListCategory extends StatelessWidget {
             margin: const EdgeInsets.only(right: 10),
             decoration: BoxDecoration(
               border: Border.all(
-                  color: isActive ? Colors.lightGreenAccent : Colors.black38,
-                  width: isActive ? 2.5 : 1),
-              borderRadius: BorderRadius.circular(15),
+                  color: isActive ? kOnPrimaryContainer : Colors.black38,
+                  width: isActive ? 1.5 : 1),
+              borderRadius: BorderRadius.circular(50),
             ),
             child: InkWell(
+              borderRadius: BorderRadius.circular(50),
+              splashColor: kPrimaryContainer,
               onTap: () {
                 // Filter the list based on the selected category
                 final selectedCategory = categoryFood[index];
@@ -227,7 +229,7 @@ class ListCategory extends StatelessWidget {
                 Scaffold.of(context).setState(() {});
               },
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(13.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -235,9 +237,9 @@ class ListCategory extends StatelessWidget {
                     Text(
                       categoryFood[index],
                       style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                      ),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: kPrimary),
                     ),
                   ],
                 ),
@@ -251,16 +253,15 @@ class ListCategory extends StatelessWidget {
   }
 }
 
-class PopularFoodList extends StatelessWidget {
-  const PopularFoodList({Key? key}) : super(key: key);
+class PopularRecipes extends StatelessWidget {
+  const PopularRecipes({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
         scrollDirection: Axis.horizontal,
         itemBuilder: (context, index) {
-          final FoodData foodData = popularFoodList[index];
-          final CategoryFood categoryFood = foodCategory[index];
+          final ListFoodsByCategory popularFoods = popularFoodsList[index];
           return Card(
             clipBehavior: Clip.antiAlias,
             elevation: 2,
@@ -269,14 +270,14 @@ class PopularFoodList extends StatelessWidget {
             ),
             child: InkWell(
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) {
-                    return DetailScreen(
-                      foodData: foodData,
-                    );
-                  }),
-                );
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(builder: (context) {
+                //     return DetailScreen(
+                //       foodData: foodData,
+                //     );
+                //   }),
+                // );
               },
               child: Stack(
                 children: <Widget>[
@@ -285,8 +286,8 @@ class PopularFoodList extends StatelessWidget {
                       topLeft: Radius.circular(20),
                       topRight: Radius.circular(20),
                     ),
-                    child: Image.asset(
-                      foodData.imagePoster,
+                    child: Image.network(
+                      popularFoods.thumbnailFood,
                       width: 150,
                       height: 100,
                       fit: BoxFit.cover,
@@ -300,7 +301,7 @@ class PopularFoodList extends StatelessWidget {
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: <Color>[
-                          Colors.black.withAlpha(0),
+                          Colors.black.withAlpha(100),
                           Colors.black12,
                           Colors.black45
                         ],
@@ -314,7 +315,7 @@ class PopularFoodList extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: <Widget>[
                         Text(
-                          foodData.name,
+                          popularFoods.food,
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -322,7 +323,7 @@ class PopularFoodList extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          foodData.category,
+                          popularFoods.category,
                           style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w300,
@@ -337,7 +338,7 @@ class PopularFoodList extends StatelessWidget {
             ),
           );
         },
-        itemCount: popularFoodList.length);
+        itemCount: popularFoodsList.length);
   }
 }
 
@@ -354,11 +355,12 @@ class FoodDataListView extends StatelessWidget {
         final ListFoodsByCategory listFood = filteredFoods[index];
         return Card(
           clipBehavior: Clip.antiAlias,
-          elevation: 2,
+          elevation: 1.5,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
           child: InkWell(
+            splashColor: kPrimaryContainer,
             onTap: () {
               // // print(foodData.name);
               // Navigator.push(

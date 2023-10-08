@@ -197,3 +197,41 @@ var listFoodsByCategory = [
       idCategory: "5",
       category: "Seafood"),
 ];
+
+var popularFoodsList = [
+  ListFoodsByCategory(
+      food: "Lasagne",
+      thumbnailFood:
+          "https://www.themealdb.com/images/media/meals/wtsvxx1511296896.jpg",
+      idFood: "52844",
+      idCategory: "4",
+      category: "Pasta"),
+  ListFoodsByCategory(
+      food: "Nasi lemak",
+      thumbnailFood:
+          "https://www.themealdb.com/images/media/meals/wai9bw1619788844.jpg",
+      idFood: "53051",
+      idCategory: "5",
+      category: "Seafood"),
+  ListFoodsByCategory(
+      food: "Mee goreng mamak",
+      thumbnailFood:
+          "https://www.themealdb.com/images/media/meals/xquakq1619787532.jpg",
+      idFood: "53048",
+      idCategory: "5",
+      category: "Seafood"),
+  ListFoodsByCategory(
+      food: "Sushi",
+      thumbnailFood:
+          "https://www.themealdb.com/images/media/meals/g046bb1663960946.jpg",
+      idFood: "53065",
+      idCategory: "5",
+      category: "Seafood"),
+  ListFoodsByCategory(
+      food: "Banana Pancakes",
+      thumbnailFood:
+          "https://www.themealdb.com/images/media/meals/sywswr1511383814.jpg",
+      idFood: "52855",
+      idCategory: "3",
+      category: "Desert"),
+];
